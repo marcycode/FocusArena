@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Clock, TrendingUp } from 'lucide-react';
+import { Users, Clock, TrendingUp, Plus, LogOut } from 'lucide-react';
 
 interface Campus {
   id: string;
@@ -15,9 +15,14 @@ interface Campus {
 interface MapScreenProps {
   campuses: Campus[];
   onCampusSelect: (campus: Campus) => void;
+  onAddUniversity?: (name: string, country: string) => void;
 }
 
-export const MapScreen: React.FC<MapScreenProps> = ({ campuses, onCampusSelect }) => {
+export const MapScreen: React.FC<MapScreenProps> = ({ campuses, onCampusSelect, onAddUniversity }) => {
+  const [showAddForm, setShowAddForm] = React.useState(false);
+  const [newUniversityName, setNewUniversityName] = React.useState('');
+  const [newUniversityCountry, setNewUniversityCountry] = React.useState('');
+
   const getIntensityColor = (hours: number) => {
     if (hours < 50) return 'bg-blue-500';
     if (hours < 150) return 'bg-yellow-500';
@@ -32,11 +37,105 @@ export const MapScreen: React.FC<MapScreenProps> = ({ campuses, onCampusSelect }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Campus Activity</h1>
-        <p className="text-white/70">See real-time study sessions around the world</p>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-6">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center space-x-4">
+          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+            <TrendingUp className="w-6 h-6 text-white" />
+          </div>
+          <h1 className="text-2xl font-bold text-white">StudySync</h1>
+        </div>
+        
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => {
+              // TODO: Implement Google logout
+              console.log('Logout clicked');
+            }}
+            className="bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-all"
+            title="Logout"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
+        </div>
       </div>
+
+      <div className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-2">Campus Activity</h1>
+          <p className="text-white/70">See real-time study sessions around the world</p>
+        </div>
+        <div className="flex space-x-3 items-center">
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl flex items-center space-x-2 transition-all duration-300 transform hover:scale-105"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Add University</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Add University Modal */}
+      {showAddForm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-6">
+          <div className="bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 p-8 max-w-md w-full">
+            <h3 className="text-2xl font-bold text-white mb-6">Add Your University</h3>
+            
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-white/70 text-sm mb-2">University Name</label>
+                <input
+                  type="text"
+                  value={newUniversityName}
+                  onChange={(e) => setNewUniversityName(e.target.value)}
+                  placeholder="e.g., Harvard University"
+                  className="w-full bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-white/70 text-sm mb-2">Country</label>
+                <input
+                  type="text"
+                  value={newUniversityCountry}
+                  onChange={(e) => setNewUniversityCountry(e.target.value)}
+                  placeholder="e.g., United States"
+                  className="w-full bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                />
+              </div>
+            </div>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={() => {
+                  if (newUniversityName.trim() && newUniversityCountry.trim() && onAddUniversity) {
+                    onAddUniversity(newUniversityName.trim(), newUniversityCountry.trim());
+                    setNewUniversityName('');
+                    setNewUniversityCountry('');
+                    setShowAddForm(false);
+                  }
+                }}
+                disabled={!newUniversityName.trim() || !newUniversityCountry.trim()}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-3 rounded-xl font-semibold transition-all"
+              >
+                Add University
+              </button>
+              <button
+                onClick={() => {
+                  setShowAddForm(false);
+                  setNewUniversityName('');
+                  setNewUniversityCountry('');
+                }}
+                className="flex-1 bg-white/10 hover:bg-white/20 border border-white/20 text-white py-3 rounded-xl font-semibold transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* World Map Container */}
       <div className="bg-white/5 backdrop-blur-lg rounded-3xl border border-white/10 p-8 mb-8">

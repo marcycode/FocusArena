@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, Target, TrendingUp, Award, BookOpen, Star, Zap } from 'lucide-react';
+import { Calendar, Clock, Target, TrendingUp, Award, BookOpen, Star, Zap, LogOut } from 'lucide-react';
 
 interface ProfileStats {
   totalHours: number;
@@ -34,7 +34,8 @@ export const Profile: React.FC<ProfileProps> = ({ stats, achievements, subjectBr
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 p-6">
       {/* Header */}
-      <div className="flex items-center space-x-4 mb-8">
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center space-x-4">
         <div className="relative">
           <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-3xl">
             👨‍💻
@@ -51,6 +52,17 @@ export const Profile: React.FC<ProfileProps> = ({ stats, achievements, subjectBr
             <span className="text-yellow-400 text-sm font-medium">Level {stats.level}</span>
           </div>
         </div>
+        </div>
+        <button
+          onClick={() => {
+            // TODO: Implement Google logout
+            console.log('Logout clicked');
+          }}
+          className="bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-all"
+          title="Logout"
+        >
+          <LogOut className="w-5 h-5" />
+        </button>
       </div>
 
       {/* XP Progress */}

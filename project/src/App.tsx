@@ -38,6 +38,12 @@ function App() {
     console.log('Selected campus:', campus.name);
   };
 
+  const handleAddUniversity = (name: string, country: string) => {
+    // Handle adding new university - could integrate with backend
+    console.log('Adding university:', name, country);
+    // For now, just log it. In a real app, this would add to the campuses list
+  };
+
   const handleToggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
@@ -61,6 +67,7 @@ function App() {
           <MapScreen
             campuses={mockCampuses}
             onCampusSelect={handleCampusSelect}
+            onAddUniversity={handleAddUniversity}
           />
         );
       case 'leaderboard':

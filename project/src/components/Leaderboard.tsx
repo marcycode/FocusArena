@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Crown, Medal, Award, TrendingUp } from 'lucide-react';
+import { Crown, Medal, Award, TrendingUp, LogOut } from 'lucide-react';
 
 interface LeaderboardUser {
   id: string;
@@ -64,9 +64,21 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ currentUser }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
-      <div className="mb-8">
+      <div className="mb-8 flex justify-between items-center">
+        <div>
         <h1 className="text-3xl font-bold text-white mb-2">Rankings</h1>
         <p className="text-white/70">Compete with friends and students worldwide</p>
+        </div>
+        <button
+          onClick={() => {
+            // TODO: Implement Google logout
+            console.log('Logout clicked');
+          }}
+          className="bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-all"
+          title="Logout"
+        >
+          <LogOut className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Tabs */}

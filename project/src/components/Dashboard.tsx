@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, RotateCcw, Flame, Clock, Target, Calendar, CheckCircle, Circle, Volume2, VolumeX, Sun, Moon } from 'lucide-react';
+import { Play, Pause, RotateCcw, Flame, Clock, Target, Calendar, CheckCircle, Circle, Volume2, VolumeX, Sun, Moon, LogOut } from 'lucide-react';
 
 interface FocusSession {
   id: string;
@@ -35,8 +35,11 @@ const Dashboard: React.FC<DashboardProps> = ({
   const [timeLeft, setTimeLeft] = useState(0);
   const [sessions, setSessions] = useState<FocusSession[]>([]);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [showTaskPanel, setShowTaskPanel] = useState(false);
+  const [showTaskPanel, setShowTaskPanel] = useState(true);
   const [showHistory, setShowHistory] = useState(false);
+  const [musicEnabled, setMusicEnabled] = useState(false);
+  const [musicVolume, setMusicVolume] = useState(50);
+  const [showMusicPanel, setShowMusicPanel] = useState(false);
 
   const presets = [15, 25, 50, 90];
   
@@ -227,25 +230,145 @@ const Dashboard: React.FC<DashboardProps> = ({
       )}
 
       {/* Top controls */}
-      <div className="absolute top-6 right-6 z-20 flex space-x-3">
+      <div className="absolute top-6 right-6 z-20">
+        <div className="flex space-x-3 mb-4">
         <button
           onClick={onToggleTheme}
           className={`${themeStyles.card} rounded-full p-3 ${themeStyles.text} ${themeStyles.cardHover} transition-all`}
         >
           {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
         </button>
+        
+        {/* Music Button with Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setMusicEnabled(!musicEnabled)}
+            className={`${themeStyles.card} rounded-full p-3 ${themeStyles.text} ${themeStyles.cardHover} transition-all ${
+              musicEnabled ? 'ring-2 ring-blue-400' : ''
+            }`}
+            title="Background Music"
+          >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+          </button>
+          
+          {/* Music Dropdown Panel */}
+          {musicEnabled && (
+            <div className={`absolute top-full right-0 mt-2 w-80 ${themeStyles.card} rounded-2xl p-6 shadow-2xl z-30`}>
+              <h3 className={`text-lg font-semibold ${themeStyles.text} mb-4`}>Background Music</h3>
+              
+              {/* Music Type Selection */}
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                <button className={`${themeStyles.button} py-3 px-4 rounded-xl text-sm ${themeStyles.text} ${themeStyles.cardHover} transition-all flex items-center justify-center space-x-2`}>
+                  <span className="text-lg">🌊</span>
+                  <span>Lofi</span>
+                </button>
+                <button className={`${themeStyles.button} py-3 px-4 rounded-xl text-sm ${themeStyles.text} ${themeStyles.cardHover} transition-all flex items-center justify-center space-x-2`}>
+                  <span className="text-lg">🌿</span>
+                  <span>Nature</span>
+                </button>
+              </div>
+              
+              {/* Timer Presets */}
+              <div className="mb-6">
+                <div className={`text-sm ${themeStyles.textSecondary} mb-3`}>Quick Timer:</div>
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <button className={`${themeStyles.button} py-2 px-3 rounded-lg text-sm ${themeStyles.text} ${themeStyles.cardHover} transition-all flex items-center justify-center space-x-1`}>
+                    <Clock className="w-3 h-3" />
+                    <span>5m</span>
+                  </button>
+                  <button className={`${themeStyles.button} py-2 px-3 rounded-lg text-sm ${themeStyles.text} ${themeStyles.cardHover} transition-all flex items-center justify-center space-x-1`}>
+                    <Clock className="w-3 h-3" />
+                    <span>15m</span>
+                  </button>
+                  <button className={`${themeStyles.button} py-2 px-3 rounded-lg text-sm ${themeStyles.text} ${themeStyles.cardHover} transition-all flex items-center justify-center space-x-1`}>
+                    <Clock className="w-3 h-3" />
+                    <span>30m</span>
+                  </button>
+                </div>
+                <button className={`w-full ${themeStyles.button} py-2 px-3 rounded-lg text-sm ${themeStyles.text} ${themeStyles.cardHover} transition-all flex items-center justify-center space-x-2`}>
+                  <Clock className="w-4 h-4" />
+                  <span>Custom Timer</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+        
         <button
           onClick={() => setSoundEnabled(!soundEnabled)}
           className={`${themeStyles.card} rounded-full p-3 ${themeStyles.text} ${themeStyles.cardHover} transition-all`}
         >
           {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
         </button>
+        <button
+          className={`${themeStyles.card} rounded-full p-3 ${themeStyles.text} ${themeStyles.cardHover} transition-all`}
+          title="Logout"
+        >
+          <LogOut className="w-5 h-5" />
+        </button>
+        </div>
+        
+        {/* Music Dropdown Panel */}
+        {showMusicPanel && (
+          <div className={`absolute top-16 right-12 ${themeStyles.card} rounded-2xl p-4 w-64 shadow-xl z-30`}>
+            <div className="space-y-4">
+              {/* Music Type Selection */}
+              <div>
+                <div className={`text-sm ${themeStyles.text} font-medium mb-3`}>Choose your vibe</div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button className={`${themeStyles.button} py-3 px-4 rounded-xl text-sm ${themeStyles.text} ${themeStyles.cardHover} transition-all flex flex-col items-center space-y-1`}>
+                    <span className="text-lg">🌊</span>
+                    <span>Lofi</span>
+                  </button>
+                  <button className={`${themeStyles.button} py-3 px-4 rounded-xl text-sm ${themeStyles.text} ${themeStyles.cardHover} transition-all flex flex-col items-center space-y-1`}>
+                    <span className="text-lg">🌿</span>
+                    <span>Nature</span>
+                  </button>
+                </div>
+              </div>
+              
+              {/* Volume Control */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className={`text-sm ${themeStyles.text} font-medium`}>Volume</span>
+                  <span className={`text-xs ${themeStyles.textSecondary}`}>{musicVolume}%</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                  </svg>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={musicVolume}
+                    onChange={(e) => setMusicVolume(parseInt(e.target.value))}
+                    className="flex-1 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #3B82F6 0%, #3B82F6 ${musicVolume}%, rgba(255,255,255,0.2) ${musicVolume}%, rgba(255,255,255,0.2) 100%)`
+                    }}
+                  />
+                </div>
+              </div>
+              
+              {/* Custom Music Option */}
+              <button className={`w-full ${themeStyles.button} py-3 px-4 rounded-xl text-sm ${themeStyles.text} ${themeStyles.cardHover} transition-all flex items-center space-x-2`}>
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                </svg>
+                <span>Set personal music</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className={`relative z-10 min-h-screen flex flex-col items-center justify-center p-6 ${themeStyles.text}`}>
         
         {/* Top Stats Bar */}
-        <div className="absolute top-6 left-6 right-32 flex justify-between items-center">
+        <div className="absolute top-6 left-6 right-80 flex justify-between items-center">
           {/* Streak Counter */}
           <div className={`${themeStyles.card} rounded-2xl px-6 py-3 flex items-center space-x-3`}>
             <Flame className={`w-6 h-6 text-orange-400 ${streak > 0 ? 'animate-pulse' : ''}`} />
@@ -320,9 +443,9 @@ const Dashboard: React.FC<DashboardProps> = ({
           )}
 
           {/* Task Lock-in Panel */}
-          {showTaskPanel && !isActive && (
+          {showTaskPanel && !isActive && timeLeft === 0 && (
             <div className={`${themeStyles.card} rounded-3xl p-8 w-full max-w-lg`}>
-              <h3 className={`text-2xl font-bold mb-6 text-center ${themeStyles.text}`}>What's your focus?</h3>
+              <h3 className={`text-2xl font-bold mb-6 text-center ${themeStyles.text}`}>Ready to lock in?</h3>
               
               <input
                 type="text"
@@ -383,36 +506,9 @@ const Dashboard: React.FC<DashboardProps> = ({
                       : `${themeStyles.button} ${themeStyles.textSecondary} opacity-50 cursor-not-allowed`
                   }`}
                 >
-                  Start Session
+                  Lock In
                 </button>
-                <button
-                onClick={() => setShowTaskPanel(false)}
-                className={`w-full ${themeStyles.button} py-3 rounded-xl ${themeStyles.textSecondary} transition-all`}
-              >
-                Close
-              </button>
               </div>
-            </div>
-          )}
-
-          {/* Central Clock In Button */}
-          {!showTaskPanel && (
-            <div className="text-center">
-              {!isActive && timeLeft === 0 && (
-                <button
-                  onClick={handleStart}
-                  className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 px-12 py-6 rounded-full font-bold text-2xl flex items-center space-x-4 transition-all transform hover:scale-110 shadow-2xl border-2 border-white/20"
-                >
-                  <Play className="w-8 h-8" />
-                  <span>{task.trim() ? 'Clock In' : 'Set Task & Clock In'}</span>
-                </button>
-              )}
-
-              {task.trim() && !isActive && timeLeft === 0 && (
-                <div className={`mt-4 ${themeStyles.textSecondary}`}>
-                  Ready to focus on: <span className={`${themeStyles.text} font-semibold`}>"{task}"</span>
-                </div>
-              )}
             </div>
           )}
         </div>

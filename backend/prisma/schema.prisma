@@ -1,0 +1,152 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// 
+// This schema is compatible with Supabase (PostgreSQL-based)
+// and local PostgreSQL installations
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  avatarUrl     String?
+  universityId  String?
+  preferences   Json?     // Theme, notifications, etc.
+  xp            Int       @default(0)
+  level         Int       @default(1)
+  streakCount   Int       @default(0)
+  totalStudyHours Float   @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  university    University? @relation(fields: [universityId], references: [id])
+  studySessions StudySession[]
+  friendships   Friendship[] @relation("UserFriendships")
+  friends       Friendship[] @relation("FriendFriendships")
+  achievements  UserAchievement[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model University {
+  id          String   @id @default(cuid())
+  name        String
+  country     String
+  city        String?
+  latitude    Float?
+  longitude   Float?
+  metadata    Json?    // Additional university info
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users       User[]
+  campuses    Campus[]
+
+  @@map("universities")
+}
+
+model Campus {
+  id           String   @id @default(cuid())
+  name         String
+  universityId String
+  latitude     Float
+  longitude    Float
+  address      String?
+  metadata     Json?    // Campus-specific info
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  university   University @relation(fields: [universityId], references: [id])
+
+  @@map("campuses")
+}
+
+model StudySession {
+  id          String    @id @default(cuid())
+  userId      String
+  startTime   DateTime
+  endTime     DateTime?
+  duration    Int       // Duration in minutes
+  subject     String?
+  task        String?
+  completed   Boolean   @default(false)
+  xpEarned    Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("study_sessions")
+}
+
+model Friendship {
+  id        String   @id @default(cuid())
+  userId    String
+  friendId  String
+  status    String   @default("pending") // pending, accepted, blocked
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User     @relation("UserFriendships", fields: [userId], references: [id], onDelete: Cascade)
+  friend    User     @relation("FriendFriendships", fields: [friendId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, friendId])
+  @@map("friendships")
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  icon        String?
+  xpReward    Int      @default(0)
+  condition   Json     // Achievement unlock conditions
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String      @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime    @default(now())
+
+  // Relations
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
